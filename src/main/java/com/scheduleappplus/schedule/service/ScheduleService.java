@@ -1,8 +1,12 @@
 package com.scheduleappplus.schedule.service;
 
+import com.scheduleappplus.authentification.dto.SessionUser;
+import com.scheduleappplus.exception.UnauthorizedException;
 import com.scheduleappplus.schedule.dto.*;
 import com.scheduleappplus.schedule.entity.Schedule;
 import com.scheduleappplus.schedule.repository.ScheduleRepository;
+import com.scheduleappplus.user.entity.User;
+import com.scheduleappplus.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -15,15 +19,20 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public CreateScheduleResponse createSchedule(CreateScheduleRequest request) {
-        Schedule newSchedule = new Schedule(request.getWriter(), request.getTitle(), request.getContent());
+    public CreateScheduleResponse createSchedule(CreateScheduleRequest request, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+        );
+
+        Schedule newSchedule = new Schedule(user, request.getTitle(), request.getContent());
         Schedule savedSchedule = scheduleRepository.save(newSchedule);
 
         return new CreateScheduleResponse(
                 savedSchedule.getId(),
-                savedSchedule.getWriter(),
+                savedSchedule.getUser().getName(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContent(),
                 savedSchedule.getCreatedDate(),
@@ -38,7 +47,7 @@ public class ScheduleService {
         return allSchedules.stream()
                 .map(schedule -> new GetAllScheduleResponse(
                         schedule.getId(),
-                        schedule.getWriter(),
+                        schedule.getUser().getName(),
                         schedule.getTitle(),
                         schedule.getContent()
                 )).toList();
@@ -52,23 +61,27 @@ public class ScheduleService {
 
         return new GetOneScheduleResponse(
                 findSchedule.getId(),
-                findSchedule.getWriter(),
+                findSchedule.getUser().getName(),
                 findSchedule.getTitle(),
                 findSchedule.getContent()
         );
     }
 
     @Transactional
-    public UpdateScheduleResponse updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
+    public UpdateScheduleResponse updateSchedule(Long scheduleId, UpdateScheduleRequest request, Long userId) {
         Schedule findSchedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("존재하지 않는 일정입니다.")
         );
+
+        if(!findSchedule.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("수정 권한이 없습니다");
+        }
 
         findSchedule.updateSchedule(request.getTitle(), request.getContent());
 
         return new UpdateScheduleResponse(
                 findSchedule.getId(),
-                findSchedule.getWriter(),
+                findSchedule.getUser().getName(),
                 findSchedule.getTitle(),
                 findSchedule.getContent(),
                 findSchedule.getCreatedDate(),
@@ -77,11 +90,13 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void deleteSchedule(Long scheduleId) {
-        boolean existence = scheduleRepository.existsById(scheduleId);
+    public void deleteSchedule(Long scheduleId, Long userId) {
+        Schedule findSchedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+        );
 
-        if (!existence) {
-            throw new IllegalStateException("존재하지 않는 일정입니다.");
+        if(!findSchedule.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("수정 권한이 없습니다");
         }
 
         scheduleRepository.deleteById(scheduleId);

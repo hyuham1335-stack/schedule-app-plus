@@ -1,5 +1,7 @@
 package com.scheduleappplus.schedule.controller;
 
+import com.scheduleappplus.authentification.dto.SessionUser;
+import com.scheduleappplus.exception.UnauthorizedException;
 import com.scheduleappplus.schedule.dto.*;
 import com.scheduleappplus.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +18,15 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/schedules")
-    public ResponseEntity<CreateScheduleResponse> createSchedule(@RequestBody CreateScheduleRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.createSchedule(request));
+    public ResponseEntity<CreateScheduleResponse> createSchedule(
+            @RequestBody CreateScheduleRequest request,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser
+    ) {
+        if(loginUser == null){
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.createSchedule(request, loginUser.getId()));
     }
 
     @GetMapping("/schedules")
@@ -33,14 +42,25 @@ public class ScheduleController {
     @PatchMapping("/schedules/{scheduleId}")
     public ResponseEntity<UpdateScheduleResponse> updateSchedule(
             @PathVariable Long scheduleId,
-            @RequestBody UpdateScheduleRequest request
+            @RequestBody UpdateScheduleRequest request,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(scheduleId, request));
+        if(loginUser == null){
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(scheduleId, request, loginUser.getId()));
     }
 
     @DeleteMapping("/schedules/{scheduleId}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long scheduleId) {
-        scheduleService.deleteSchedule(scheduleId);
+    public ResponseEntity<Void> deleteSchedule(
+            @PathVariable Long scheduleId,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser
+    )
+    {
+        if(loginUser == null){
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+        scheduleService.deleteSchedule(scheduleId, loginUser.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
