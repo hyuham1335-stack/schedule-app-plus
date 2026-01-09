@@ -1,5 +1,6 @@
 package com.scheduleappplus.user.service;
 
+import com.scheduleappplus.config.PasswordEncoder;
 import com.scheduleappplus.user.dto.*;
 import com.scheduleappplus.user.entity.User;
 import com.scheduleappplus.user.exception.UserAlreadyExistsException;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder pe;
 
     @Transactional
     public CreateUserResponse createUser(CreateUserRequest request) {
@@ -25,7 +27,7 @@ public class UserService {
             throw new UserAlreadyExistsException(HttpStatus.CONFLICT ,"이미 존재하는 회원입니다.");
         }
 
-        User newUser = new User(request.getName(), request.getEmail(), request.getPassword());
+        User newUser = new User(request.getName(), request.getEmail(), pe.encode(request.getPassword()));
         User savedUser = userRepository.save(newUser);
 
         return new CreateUserResponse(
@@ -68,7 +70,7 @@ public class UserService {
                 () -> new UserNotFoundException(HttpStatus.NOT_FOUND ,"존재하지 않는 유저입니다.")
         );
 
-        findUser.updateUser(request.getName(), request.getEmail(), request.getPassword());
+        findUser.updateUser(request.getName(), request.getEmail(), pe.encode(request.getPassword()));
 
         return new UpdateUserResponse(
                 findUser.getId(),
