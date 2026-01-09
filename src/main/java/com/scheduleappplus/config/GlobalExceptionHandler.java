@@ -2,6 +2,7 @@ package com.scheduleappplus.config;
 
 import com.scheduleappplus.authentification.exception.AuthentificationException;
 import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.comment.exception.CommentException;
 import com.scheduleappplus.schedule.exception.ScheduleException;
 import com.scheduleappplus.user.exception.UserException;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ScheduleException.class)
     public ResponseEntity<String> handleScheduleException(ScheduleException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(CommentException.class)
+    public ResponseEntity<String> handleCommentException(CommentException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 

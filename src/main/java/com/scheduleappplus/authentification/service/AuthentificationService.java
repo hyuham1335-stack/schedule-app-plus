@@ -20,11 +20,11 @@ public class AuthentificationService {
     @Transactional
     public LoginResponse login(LoginRequest request) {
         User findUser = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new UnauthorizedException(HttpStatus.UNAUTHORIZED,"존재하지 않는 이메일입니다.")
+                () -> new UnauthorizedException("존재하지 않는 이메일입니다.")
         );
 
         if (!pe.matches(request.getPassword(), findUser.getPassword())) {
-            throw new UnauthorizedException(HttpStatus.UNAUTHORIZED,"비밀번호가 틀립니다.");
+            throw new UnauthorizedException("비밀번호가 틀립니다.");
         }
 
         return new LoginResponse(

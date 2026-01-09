@@ -54,7 +54,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public GetOneUserResponse findOne(Long userId) {
         User findUser = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(HttpStatus.NOT_FOUND ,"존재하지 않는 유저입니다.")
+                () -> new UserNotFoundException("존재하지 않는 유저입니다.")
         );
 
         return new GetOneUserResponse(
@@ -67,7 +67,7 @@ public class UserService {
     @Transactional
     public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
         User findUser = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(HttpStatus.NOT_FOUND ,"존재하지 않는 유저입니다.")
+                () -> new UserNotFoundException("존재하지 않는 유저입니다.")
         );
 
         findUser.updateUser(request.getName(), request.getEmail(), pe.encode(request.getPassword()));
@@ -86,7 +86,7 @@ public class UserService {
         boolean existence = userRepository.existsById(userId);
 
         if (!existence) {
-            throw new UserNotFoundException(HttpStatus.NOT_FOUND ,"존재하지 않는 유저입니다.");
+            throw new UserNotFoundException("존재하지 않는 유저입니다.");
         }
         userRepository.deleteById(userId);
     }

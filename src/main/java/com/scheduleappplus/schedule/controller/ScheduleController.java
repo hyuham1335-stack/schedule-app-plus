@@ -26,7 +26,7 @@ public class ScheduleController {
 
         // 미로그인 시 401 상태코드로 응답 전송
         if(loginUser == null){
-            throw new UnauthorizedException(HttpStatus.UNAUTHORIZED ,"로그인이 필요합니다.");
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.createSchedule(request, loginUser.getId()));
@@ -50,7 +50,7 @@ public class ScheduleController {
             @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser
     ){
         if(loginUser == null){
-            throw new UnauthorizedException(HttpStatus.UNAUTHORIZED ,"로그인이 필요합니다.");
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(scheduleId, request, loginUser.getId()));
     }
@@ -62,7 +62,7 @@ public class ScheduleController {
     )
     {
         if(loginUser == null){
-            throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
         scheduleService.deleteSchedule(scheduleId, loginUser.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
