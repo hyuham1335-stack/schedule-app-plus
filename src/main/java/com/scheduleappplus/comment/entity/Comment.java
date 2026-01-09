@@ -32,6 +32,7 @@ public class Comment extends BaseEntity {
         this.content = content;
         this.schedule = schedule;
         this.user = user;
+        schedule.addCommentCountOnSchedule();
     }
 
     public void updateComment(String content) {

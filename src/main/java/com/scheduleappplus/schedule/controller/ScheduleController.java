@@ -34,8 +34,12 @@ public class ScheduleController {
 
     // 일정 목록 검색 시 사용자명으로도 검색 가능
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(@RequestParam(required = false) String writer) {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findAll(writer));
+    public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(
+            @RequestParam(required = false) String writer,
+            @RequestParam(required = false, defaultValue = "0") int pageNo,
+            @RequestParam(required = false, defaultValue = "10") int pageSize
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findAll(writer, pageNo, pageSize));
     }
 
     @GetMapping("/schedules/{scheduleId}")

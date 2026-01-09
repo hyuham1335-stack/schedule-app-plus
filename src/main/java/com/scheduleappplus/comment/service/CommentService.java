@@ -28,7 +28,7 @@ public class CommentService {
 
     @Transactional
     public CreateCommentResponse createComment(Long scheduleId, CreateCommentRequest request, Long userId) {
-        Schedule Schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new ScheduleNotFoundException("존재하지 않는 일정입니다.")
         );
 
@@ -36,7 +36,7 @@ public class CommentService {
                 () -> new UserNotFoundException("존재하지 않는 유저입니다.")
         );
 
-        Comment newComment = new Comment(request.getContent(), Schedule, user);
+        Comment newComment = new Comment(request.getContent(), schedule, user);
         Comment savedComment = commentRepository.save(newComment);
 
         return new CreateCommentResponse(
@@ -51,7 +51,9 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<GetAllCommentByScheduleResponse> getAllCommentBySchedule(Long scheduleId) {
 
-        checkScheduleExists(scheduleId);
+        if(scheduleRepository.findById(scheduleId).isEmpty()) {
+            throw new ScheduleNotFoundException("존재하지 않는 일정입니다.");
+        }
 
         List<Comment> findComments = commentRepository.findBySchedule(scheduleId);
 
@@ -77,8 +79,6 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public GetCommentResponse getComment(Long scheduleId, Long commentId) {
-
-        checkScheduleExists(scheduleId);
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CommentNotFoundException("존재하지 않는 댓글입니다.")
@@ -126,13 +126,8 @@ public class CommentService {
             throw new UnauthorizedException("댓글 삭제 권한이 없습니다.");
         }
 
+        findComment.getSchedule().removeCommentCountOnSchedule();
         commentRepository.deleteById(findComment.getId());
     }
 
-
-    private void checkScheduleExists(Long scheduleId) {
-        if(scheduleRepository.findById(scheduleId).isEmpty()) {
-            throw new ScheduleNotFoundException("존재하지 않는 일정입니다.");
-        }
-    }
 }

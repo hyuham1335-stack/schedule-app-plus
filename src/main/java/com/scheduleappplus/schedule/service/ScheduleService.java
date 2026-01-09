@@ -1,6 +1,7 @@
 package com.scheduleappplus.schedule.service;
 
 import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.comment.repository.CommentRepository;
 import com.scheduleappplus.schedule.dto.*;
 import com.scheduleappplus.schedule.entity.Schedule;
 import com.scheduleappplus.schedule.exception.ScheduleNotFoundException;
@@ -9,6 +10,10 @@ import com.scheduleappplus.user.entity.User;
 import com.scheduleappplus.user.exception.UserNotFoundException;
 import com.scheduleappplus.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +25,7 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -42,15 +48,20 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetAllScheduleResponse> findAll(String writer) {
-        List<Schedule> allSchedules = scheduleRepository.findAllByWriter(writer);
+    public List<GetAllScheduleResponse> findAll(String writer, int pageNo, int pageSize) {
 
-        return allSchedules.stream()
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "lastModifiedDate"));
+
+        Page<Schedule> findSchedules = scheduleRepository.findAllByWriter(writer, pageable);
+
+        return findSchedules.getContent().stream()
                 .map(schedule -> new GetAllScheduleResponse(
-                        schedule.getId(),
-                        schedule.getUser().getName(),
                         schedule.getTitle(),
-                        schedule.getContent()
+                        schedule.getContent(),
+                        schedule.getCommentCount(),
+                        schedule.getCreatedDate(),
+                        schedule.getLastModifiedDate(),
+                        schedule.getUser().getName()
                 )).toList();
     }
 

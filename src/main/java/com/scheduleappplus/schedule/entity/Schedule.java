@@ -24,14 +24,25 @@ public class Schedule extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private Long commentCount;
+
     public Schedule(User user, String title, String content) {
         this.user = user;
         this.title = title;
         this.content = content;
+        commentCount = 0L;
     }
 
     public void updateSchedule(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void addCommentCountOnSchedule(){
+        commentCount++;
+    }
+
+    public void removeCommentCountOnSchedule(){
+        commentCount--;
     }
 }
