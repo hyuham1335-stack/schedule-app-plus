@@ -2,9 +2,12 @@ package com.scheduleappplus.user.service;
 
 import com.scheduleappplus.user.dto.*;
 import com.scheduleappplus.user.entity.User;
+import com.scheduleappplus.user.exception.UserAlreadyExistsException;
+import com.scheduleappplus.user.exception.UserNotFoundException;
 import com.scheduleappplus.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +22,7 @@ public class UserService {
     public CreateUserResponse createUser(CreateUserRequest request) {
 
         if(userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
+            throw new UserAlreadyExistsException(HttpStatus.CONFLICT ,"이미 존재하는 회원입니다.");
         }
 
         User newUser = new User(request.getName(), request.getEmail(), request.getPassword());
@@ -49,7 +52,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public GetOneUserResponse findOne(Long userId) {
         User findUser = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+                () -> new UserNotFoundException(HttpStatus.NOT_FOUND ,"존재하지 않는 유저입니다.")
         );
 
         return new GetOneUserResponse(
@@ -62,7 +65,7 @@ public class UserService {
     @Transactional
     public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
         User findUser = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+                () -> new UserNotFoundException(HttpStatus.NOT_FOUND ,"존재하지 않는 유저입니다.")
         );
 
         findUser.updateUser(request.getName(), request.getEmail(), request.getPassword());
@@ -81,7 +84,7 @@ public class UserService {
         boolean existence = userRepository.existsById(userId);
 
         if (!existence) {
-            throw new IllegalStateException("존재하지 않는 유저입니다.");
+            throw new UserNotFoundException(HttpStatus.NOT_FOUND ,"존재하지 않는 유저입니다.");
         }
         userRepository.deleteById(userId);
     }

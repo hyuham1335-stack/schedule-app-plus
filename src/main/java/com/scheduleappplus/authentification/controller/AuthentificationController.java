@@ -5,6 +5,7 @@ import com.scheduleappplus.authentification.dto.LoginResponse;
 import com.scheduleappplus.authentification.dto.SessionUser;
 import com.scheduleappplus.authentification.service.AuthentificationService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,11 @@ public class AuthentificationController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
-            @RequestBody LoginRequest request,
+            @Valid @RequestBody LoginRequest request,
             HttpSession session
     ){
         LoginResponse loginResponse = authService.login(request);
+
         SessionUser sessionUser = new SessionUser(
                 loginResponse.getId(),
                 loginResponse.getUsername()
