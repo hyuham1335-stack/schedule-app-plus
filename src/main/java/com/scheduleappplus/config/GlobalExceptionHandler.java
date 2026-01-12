@@ -1,7 +1,6 @@
 package com.scheduleappplus.config;
 
-import com.scheduleappplus.authentification.exception.AuthentificationException;
-import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.authentification.domain.exception.AuthentificationException;
 import com.scheduleappplus.comment.exception.CommentException;
 import com.scheduleappplus.schedule.exception.ScheduleException;
 import com.scheduleappplus.user.exception.UserException;

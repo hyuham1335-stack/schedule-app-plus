@@ -1,6 +1,6 @@
 package com.scheduleappplus.schedule.service;
 
-import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.authentification.domain.exception.UnauthorizedException;
 import com.scheduleappplus.comment.repository.CommentRepository;
 import com.scheduleappplus.schedule.dto.*;
 import com.scheduleappplus.schedule.entity.Schedule;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

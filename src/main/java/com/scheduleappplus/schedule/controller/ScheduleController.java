@@ -1,7 +1,7 @@
 package com.scheduleappplus.schedule.controller;
 
 import com.scheduleappplus.authentification.dto.SessionUser;
-import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.authentification.domain.exception.UnauthorizedException;
 import com.scheduleappplus.schedule.dto.*;
 import com.scheduleappplus.schedule.service.ScheduleService;
 import jakarta.validation.Valid;

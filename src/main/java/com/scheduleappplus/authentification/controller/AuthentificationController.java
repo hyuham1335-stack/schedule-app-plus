@@ -1,5 +1,6 @@
 package com.scheduleappplus.authentification.controller;
 
+import com.scheduleappplus.authentification.domain.authentificationstatus.AuthStatus;
 import com.scheduleappplus.authentification.dto.LoginRequest;
 import com.scheduleappplus.authentification.dto.LoginResponse;
 import com.scheduleappplus.authentification.dto.SessionUser;
@@ -21,8 +22,14 @@ public class AuthentificationController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody LoginRequest request,
-            HttpSession session
+            HttpSession session,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser
     ){
+        if(loginUser != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.alreadyLogined(loginUser));
+        }
+
+
         LoginResponse loginResponse = authService.login(request);
 
         SessionUser sessionUser = new SessionUser(

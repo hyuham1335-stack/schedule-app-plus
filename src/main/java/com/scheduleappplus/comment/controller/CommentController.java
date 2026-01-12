@@ -1,7 +1,7 @@
 package com.scheduleappplus.comment.controller;
 
 import com.scheduleappplus.authentification.dto.SessionUser;
-import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.authentification.domain.exception.UnauthorizedException;
 import com.scheduleappplus.comment.dto.*;
 import com.scheduleappplus.comment.service.CommentService;
 import jakarta.validation.Valid;

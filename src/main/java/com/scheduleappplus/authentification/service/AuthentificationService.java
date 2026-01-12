@@ -1,13 +1,13 @@
 package com.scheduleappplus.authentification.service;
 
+import com.scheduleappplus.authentification.domain.authentificationstatus.AuthStatus;
 import com.scheduleappplus.authentification.dto.LoginRequest;
 import com.scheduleappplus.authentification.dto.LoginResponse;
-import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.authentification.domain.exception.UnauthorizedException;
 import com.scheduleappplus.config.PasswordEncoder;
 import com.scheduleappplus.user.entity.User;
 import com.scheduleappplus.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +30,7 @@ public class AuthentificationService {
         return new LoginResponse(
                 findUser.getId(),
                 findUser.getName(),
-                findUser.getEmail()
+                AuthStatus.LOGIN_SUCCESS
         );
     }
 }

@@ -1,6 +1,6 @@
 package com.scheduleappplus.comment.service;
 
-import com.scheduleappplus.authentification.exception.UnauthorizedException;
+import com.scheduleappplus.authentification.domain.exception.UnauthorizedException;
 import com.scheduleappplus.comment.dto.*;
 import com.scheduleappplus.comment.entity.Comment;
 import com.scheduleappplus.comment.exception.CommentNotFoundException;
@@ -13,7 +13,6 @@ import com.scheduleappplus.user.exception.UserNotFoundException;
 import com.scheduleappplus.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
