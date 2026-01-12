@@ -70,7 +70,7 @@ public class UserService {
                 () -> new UserNotFoundException("존재하지 않는 유저입니다.")
         );
 
-        findUser.updateUser(request.getName(), request.getEmail(), pe.encode(request.getPassword()));
+        findUser.updateUser(request.getName(), pe.encode(request.getPassword()));
 
         return new UpdateUserResponse(
                 findUser.getId(),

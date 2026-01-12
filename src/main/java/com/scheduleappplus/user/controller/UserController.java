@@ -1,7 +1,10 @@
 package com.scheduleappplus.user.controller;
 
+import com.scheduleappplus.authentification.domain.exception.UnauthorizedException;
+import com.scheduleappplus.authentification.dto.SessionUser;
 import com.scheduleappplus.user.dto.*;
 import com.scheduleappplus.user.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,14 +36,29 @@ public class UserController {
     @PatchMapping("users/{userId}")
     public ResponseEntity<UpdateUserResponse> updateUser(
             @PathVariable Long userId,
-            @Valid @RequestBody UpdateUserRequest request
+            @Valid @RequestBody UpdateUserRequest request,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser
     ) {
+        if(loginUser == null){
+            throw new UnauthorizedException("로그인이 필요합니다");
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userId, request));
     }
 
     @DeleteMapping("users/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId){
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Long userId,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser,
+            HttpSession session
+    ){
+        if(loginUser == null){
+            throw new UnauthorizedException("로그인이 필요합니다");
+        }
+
         userService.deleteUser(userId);
+        session.invalidate();
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
